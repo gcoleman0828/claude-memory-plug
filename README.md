@@ -9,14 +9,34 @@ Claude Desktop on Windows silently accumulates gigabytes of VM bundles and cache
 ```mermaid
 flowchart TD
     A([Double-click Desktop Shortcut]) --> B[Launch-Claude.ps1 starts]
-    B --> C[Claude Desktop launches]
-    C --> D{Claude window still open?}
-    D -- Yes, poll every 3s --> D
-    D -- No --> E[Wait 5s for Claude to shut down]
-    E --> F[Cleanup-ClaudeDesktop.ps1 runs]
-    F --> G[Delete vm_bundles Cache Code Cache GPUCache]
-    G --> H[Log results to cleanup-logs]
-    H --> I([Done - memory reclaimed])
+    B --> C[Launches Claude Desktop via MSIX App Launcher]
+    C --> D[Polls every 3 seconds for main window handle]
+    D --> E{Claude window still open?}
+    E -- Yes --> D
+    E -- No --> F[Wait 5 seconds for Claude to finish shutdown]
+    F --> G[Cleanup-ClaudeDesktop.ps1 runs]
+    G --> H{Detect install type}
+    H --> I[EXE install path]
+    H --> J[MSIX install path]
+    I --> K[Delete vm_bundles]
+    I --> L[Delete Cache]
+    I --> M[Delete Code Cache]
+    I --> N[Delete GPUCache]
+    J --> K
+    J --> L
+    J --> M
+    J --> N
+    K --> O[Log results to cleanup-logs folder]
+    L --> O
+    M --> O
+    N --> O
+    O --> P([Done - memory reclaimed])
+
+    style A fill:#4a9eff,color:#fff
+    style P fill:#22c55e,color:#fff
+    style E fill:#f59e0b,color:#fff
+    style G fill:#8b5cf6,color:#fff
+    style H fill:#f59e0b,color:#fff
 ```
 
 ---
